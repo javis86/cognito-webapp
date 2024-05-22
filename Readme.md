@@ -30,3 +30,18 @@ Endpoint: '/account/confirm'
 ### Login
 Endpoint: '/account/login'
 
+### Endpoint Authorization requires aws cognito token
+Endpoint: /account/ShowInfo
+
+```csharp
+app.MapGet("/account/showInfo",
+        (IAmazonCognitoIdentityProvider cognitoIdentityProvider,
+            AwsCognitoOptions awsCognitoOptions) =>
+        {
+            return;
+        })
+    .WithName("ShowInfo")
+    .RequireAuthorization()
+    .WithOpenApi();
+```
+
