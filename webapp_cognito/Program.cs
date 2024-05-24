@@ -53,15 +53,17 @@ app.MapPost("/account/create",
             AwsCognitoOptions awsCognitoOptions,
             NewUserDataModel userDataModel) =>
         {
-            var userAttrs = new AttributeType
+            var userAttrsList = new List<AttributeType>()
             {
-                Name = "email",
-                Value = "pepito@domain.com",
+                new AttributeType(){
+                    Name = "email",
+                    Value = "pepito@domain.com",
+                }, 
+                new AttributeType(){
+                    Name = "custom:NameIdentifier",
+                    Value = Guid.NewGuid().ToString(),
+                }, 
             };
-
-            var userAttrsList = new List<AttributeType>();
-
-            userAttrsList.Add(userAttrs);
 
             var signUpRequest = new SignUpRequest
             {
