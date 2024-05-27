@@ -19,13 +19,16 @@
 ````
 
 ## Flow
-Signup -> Confirmation -> Login -> Endpoint authorization
+Signup -> Confirmation -> Phone Number Confirmation -> Login -> Endpoint authorization
 
 ### Signup
 Endpoint: '/account/create'
 
-### Confirmation
+### AutoConfirmation
 Endpoint: '/account/confirm'
+
+### Phone Number AutoConfirmation
+Endpoint: '/account/confirmPhoneNumber'
 
 ### Login
 Endpoint: '/account/login'

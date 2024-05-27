@@ -58,17 +58,20 @@ app.MapPost("/account/create",
                 new AttributeType(){
                     Name = "email",
                     Value = "pepito@domain.com",
-                }, 
+                },
                 new AttributeType(){
-                    Name = "custom:NameIdentifier",
-                    Value = Guid.NewGuid().ToString(),
-                }, 
+                    Name = "phone_number",
+                    Value = userDataModel.Username,
+                },
             };
 
+            var username = Guid.NewGuid().ToString();
+            Console.WriteLine($@"username-id {username}");
+            
             var signUpRequest = new SignUpRequest
             {
                 UserAttributes = userAttrsList,
-                Username = userDataModel.Username,
+                Username = username,
                 ClientId = awsCognitoOptions.UserPoolClientId,
                 Password = userDataModel.Password,
             };
@@ -97,6 +100,41 @@ app.MapPost("/account/confirm",
             return response;
         })
     .WithName("AccountConfirmation")
+    .WithOpenApi();
+
+app.MapPost("/account/confirmPhoneNumber",
+        async (IAmazonCognitoIdentityProvider cognitoIdentityProvider,
+            AwsCognitoOptions awsCognitoOptions,
+            NewUserDataModel userDataModel) =>
+        {
+            
+            // This method programmatically handles phone number confirmation.
+            //  This flow can also be managed within AWS Cognito through its native functionality and/or through its triggers.
+            
+            var request = new AdminUpdateUserAttributesRequest
+            {
+                UserPoolId = awsCognitoOptions.UserPoolId,
+                Username = userDataModel.Username,
+                UserAttributes = new List<AttributeType>
+                {
+                    new() { Name = "phone_number_verified", Value = "true" }
+                }
+            };
+
+            try
+            {
+                var response = await cognitoIdentityProvider.AdminUpdateUserAttributesAsync(request);
+                Console.WriteLine($"Successfully updated user attributes for {userDataModel.Username}.");
+                
+                return response;
+            }
+            catch (AmazonCognitoIdentityProviderException ex)
+            {
+                Console.WriteLine($"Error updating user attributes: {ex.Message}");
+                throw;
+            }
+        })
+    .WithName("PhoneNumberConfirmation")
     .WithOpenApi();
 
 app.MapPost("/account/login",
